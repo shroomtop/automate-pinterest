@@ -1,0 +1,99 @@
+<!--LEGAL-DNA:{"jurisdiction":"US/MN/Baxter","export_tag":"EAR99","spdx":"MIT","artifact_time":1748831183572,"def_pub":"OIN","consent_req":true,"city":"Baxter"}-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>📌 Pinterest Scheduler – Shroomtop™</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .dropzone {
+      border: 2px dashed #a78bfa;
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+    }
+    .photo-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 0.5rem; }
+    .day-label { margin-top: 1.25rem; font-weight: 600; color: #c084fc; }
+  </style>
+</head>
+<body class="bg-zinc-900 text-white min-h-screen p-6">
+  <h1 class="text-3xl font-bold text-center text-violet-400 mb-6">Shroomtop™ Pinterest Scheduler</h1>
+  <div class="dropzone bg-zinc-800 text-violet-300" id="drop">
+    <p>📂 Drop up to 1095 photos (3/day × N) or click to select</p>
+    <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
+  </div>
+
+  <div class="mt-6">
+    <label for="days" class="block mb-1 font-semibold">Select duration in days</label>
+    <input type="number" id="days" value="7" min="1" max="365" class="w-full bg-zinc-800 text-white rounded p-2">
+  </div>
+
+  <div class="mt-4">
+    <button onclick="processFiles()" class="bg-purple-500 hover:bg-purple-600 text-white font-bold px-4 py-2 rounded">
+      📅 Generate Schedule
+    </button>
+  </div>
+
+  <div id="preview" class="mt-6 space-y-6"></div>
+
+  <script>
+    const drop = document.getElementById('drop');
+    const fileInput = document.getElementById('fileInput');
+    let files = [];
+
+    drop.onclick = () => fileInput.click();
+    drop.ondragover = e => { e.preventDefault(); drop.classList.add('bg-purple-900'); };
+    drop.ondragleave = () => drop.classList.remove('bg-purple-900');
+    drop.ondrop = e => {
+      e.preventDefault(); drop.classList.remove('bg-purple-900');
+      files = [...e.dataTransfer.files];
+      alert(`${files.length} files selected`);
+    };
+    fileInput.onchange = e => {
+      files = [...e.target.files];
+      alert(`${files.length} files selected`);
+    };
+
+    function processFiles() {
+      const days = parseInt(document.getElementById('days').value);
+      if (files.length !== days * 3) {
+        alert(`❌ You need exactly ${days * 3} photos for ${days} days.`);
+        return;
+      }
+
+      const out = {};
+      const container = document.getElementById('preview');
+      container.innerHTML = '';
+
+      for (let i = 0; i < days; i++) {
+        const group = files.slice(i * 3, i * 3 + 3);
+        const dayLabel = document.createElement('div');
+        dayLabel.className = "day-label"; dayLabel.textContent = `📆 Day ${i + 1}`;
+        container.appendChild(dayLabel);
+
+        const grid = document.createElement('div'); grid.className = 'photo-grid';
+        out[`day${i + 1}`] = [];
+
+        group.forEach(file => {
+          const url = URL.createObjectURL(file);
+          const img = document.createElement('img');
+          img.src = url; img.className = 'rounded';
+          grid.appendChild(img);
+          out[`day${i + 1}`].push(file.name);
+        });
+        container.appendChild(grid);
+      }
+
+      // Export JSON
+      const blob = new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'schedule.json';
+      a.textContent = '💾 Download schedule.json';
+      a.className = 'block mt-4 text-green-400 underline';
+      container.appendChild(a);
+    }
+  </script>
+</body>
+</html>
