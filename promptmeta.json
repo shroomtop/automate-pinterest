@@ -1,0 +1,7 @@
+{
+  "tool": "Shroomtop™ Pinterest Scheduler",
+  "version": "v1.0",
+  "author": "Shroomtop420™",
+  "mode": "offline-first",
+  "files": ["run.sh", "ui/index.html", "engine/generate_caption.sh", "post/pin_upload.sh", "cron/install.sh", "cron/com.shroomtop.daily.pin.plist", "logs/", "output/"]
+}

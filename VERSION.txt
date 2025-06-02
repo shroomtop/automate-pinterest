@@ -1,0 +1,3 @@
+Shroomtop™ Pinterest Autoposter v1.0
+Build: June 2, 2025
+Platform: macOS (launchd + Tailwind CLI)
